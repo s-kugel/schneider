@@ -1,0 +1,1 @@
+package com.s_kugel.schneider.enums;
