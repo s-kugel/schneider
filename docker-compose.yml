@@ -1,0 +1,56 @@
+services:
+  eule-db:
+    container_name: eule-db
+    image: mysql:latest
+    environment:
+      MYSQL_DATABASE: ${EULE_DB_NAME}
+      MYSQL_ROOT_PASSWORD: mysql
+      MYSQL_USER: ${EULE_DB_USER}
+      MYSQL_PASSWORD: ${EULE_DB_PASSWORD}
+      TZ: 'Asia/Tokyo'
+    ports:
+      - '${EULE_DB_PORT}:3306'
+    volumes:
+      - eule-db-data:/var/lib/mysql
+    networks:
+      - schneider
+    healthcheck:
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      test: mysqladmin ping -h 127.0.0.1 -u ${EULE_DB_USER} -p${EULE_DB_PASSWORD}
+    command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_general_ci
+
+  fasan-db:
+    container_name: fasan-db
+    image: mysql:latest
+    environment:
+      MYSQL_DATABASE: ${FASAN_DB_NAME}
+      MYSQL_ROOT_PASSWORD: mysql
+      MYSQL_USER: ${FASAN_DB_USER}
+      MYSQL_PASSWORD: ${FASAN_DB_PASSWORD}
+      TZ: 'Asia/Tokyo'
+    ports:
+      - '${FASAN_DB_PORT}:3306'
+    volumes:
+      - fasan-db-data:/var/lib/mysql
+    networks:
+      - schneider
+    healthcheck:
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      test: mysqladmin ping -h 127.0.0.1 -u ${FASAN_DB_USER} -p${FASAN_DB_PASSWORD}
+    command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_general_ci
+
+volumes:
+  eule-db-data:
+    name: eule-db-data
+    driver: local
+  fasan-db-data:
+    name: fasan-db-data
+    driver: local
+
+networks:
+  schneider:
+    name: schneider
