@@ -31,4 +31,5 @@ flyway {
     url = "jdbc:mysql://${System.getenv("EULE_DB_HOST")}:${System.getenv("EULE_DB_PORT")}/${System.getenv("EULE_DB_NAME")}"
     user = System.getenv("EULE_DB_USER")
     password = System.getenv("EULE_DB_PASSWORD")
+    cleanDisabled = false
 }
