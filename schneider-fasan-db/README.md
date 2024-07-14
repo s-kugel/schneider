@@ -1,1 +1,0 @@
-# schneider-fasan-db
