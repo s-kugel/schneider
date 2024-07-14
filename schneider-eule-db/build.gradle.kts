@@ -1,3 +1,5 @@
+import org.gradle.api.tasks.testing.logging.TestExceptionFormat
+
 buildscript {
     repositories {
         mavenCentral()
@@ -13,6 +15,9 @@ plugins {
     eclipse
     alias(libs.plugins.flyway)
     alias(libs.plugins.spotless)
+    alias(libs.plugins.shadow)
+    alias(libs.plugins.micronaut.application)
+    alias(libs.plugins.micronaut.aot)
 }
 
 repositories {
@@ -20,11 +25,44 @@ repositories {
 }
 
 dependencies {
-    implementation(libs.mysql)
+    runtimeOnly(libs.mysql)
+    implementation(libs.lombok)
+    annotationProcessor(libs.lombok)
+    testImplementation(libs.lombok)
+    testAnnotationProcessor(libs.lombok)
+    implementation(libs.ulid)
+    implementation(libs.guava)
+
+    implementation(project(":enums"))
+
+    runtimeOnly("org.yaml:snakeyaml")
+    implementation("io.micronaut.serde:micronaut-serde-jackson")
+    compileOnly("io.micronaut:micronaut-http-client")
+    implementation("io.micronaut.data:micronaut-data-jdbc")
+    runtimeOnly("io.micronaut.sql:micronaut-jdbc-hikari")
+    annotationProcessor("io.micronaut.data:micronaut-data-processor")
+}
+
+java {
+    sourceCompatibility = JavaVersion.toVersion("21")
+    targetCompatibility = JavaVersion.toVersion("21")
 }
 
 tasks.withType<JavaCompile> {
     options.encoding = "UTF-8"
+}
+
+tasks.withType<Test> {
+    useJUnitPlatform()
+    testLogging {
+        events(
+            "SKIPPED",
+            "PASSED",
+            "FAILED",
+            "STANDARD_ERROR",
+        )
+        exceptionFormat = TestExceptionFormat.FULL
+    }
 }
 
 flyway {
@@ -32,4 +70,40 @@ flyway {
     user = System.getenv("EULE_DB_USER")
     password = System.getenv("EULE_DB_PASSWORD")
     cleanDisabled = false
+}
+
+application {
+    mainClass = "com.s_kugel.schneider.eule.Application"
+}
+
+micronaut {
+    runtime("netty")
+    testRuntime("junit5")
+    processing {
+        incremental(true)
+        annotations("com.s_kugel.schneider.eule.*")
+    }
+    aot {
+        optimizeServiceLoading = false
+        convertYamlToJava = false
+        precomputeOperations = true
+        cacheEnvironment = true
+        optimizeClassLoading = true
+        deduceEnvironment = true
+        optimizeNetty = true
+        replaceLogbackXml = true
+    }
+}
+
+spotless {
+    encoding("UTF-8")
+    java {
+        importOrder()
+        formatAnnotations()
+        indentWithSpaces()
+        removeUnusedImports()
+        trimTrailingWhitespace()
+        endWithNewline()
+        googleJavaFormat()
+    }
 }
