@@ -22,6 +22,7 @@ plugins {
 
 repositories {
     mavenCentral()
+    mavenLocal()
 }
 
 dependencies {
@@ -33,7 +34,7 @@ dependencies {
     implementation(libs.ulid)
     implementation(libs.guava)
 
-    implementation(project(":enums"))
+    implementation("com.s-kugel.schneider:enums:1.0.0")
 
     runtimeOnly("org.yaml:snakeyaml")
     implementation("io.micronaut.serde:micronaut-serde-jackson")
